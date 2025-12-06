@@ -114,26 +114,26 @@ export function OutputPanel({ output, isLoading, error, title }: OutputPanelProp
 
   return (
     <Card className="bg-card border-border">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-        <CardTitle className="text-lg font-semibold">Output</CardTitle>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 gap-2">
+        <CardTitle className="text-base sm:text-lg font-semibold">Output</CardTitle>
         {output && !isLoading && (
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={handleCopy} className="h-8 gap-1.5 bg-transparent">
+          <div className="flex gap-1.5 sm:gap-2">
+            <Button variant="outline" size="sm" onClick={handleCopy} className="h-8 gap-1 sm:gap-1.5 bg-transparent px-2 sm:px-3">
               {copied ? (
                 <>
                   <Check className="h-3.5 w-3.5" />
-                  <span>Copied</span>
+                  <span className="text-xs sm:text-sm">Copied</span>
                 </>
               ) : (
                 <>
                   <Copy className="h-3.5 w-3.5" />
-                  <span>Copy</span>
+                  <span className="text-xs sm:text-sm hidden sm:inline">Copy</span>
                 </>
               )}
             </Button>
-            <Button variant="outline" size="sm" onClick={handleDownload} className="h-8 gap-1.5 bg-transparent">
+            <Button variant="outline" size="sm" onClick={handleDownload} className="h-8 gap-1 sm:gap-1.5 bg-transparent px-2 sm:px-3">
               <Download className="h-3.5 w-3.5" />
-              <span>Download</span>
+              <span className="text-xs sm:text-sm hidden sm:inline">Download</span>
             </Button>
           </div>
         )}
@@ -153,12 +153,12 @@ export function OutputPanel({ output, isLoading, error, title }: OutputPanelProp
         ) : output ? (
           <div className="prose prose-invert prose-sm max-w-none">
             <div
-              className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-foreground bg-secondary/50 rounded-md p-4 overflow-auto max-h-[400px]"
+              className="whitespace-pre-wrap font-sans text-xs sm:text-sm leading-relaxed text-foreground bg-secondary/50 rounded-md p-3 sm:p-4 overflow-auto max-h-[300px] sm:max-h-[400px]"
               dangerouslySetInnerHTML={{ __html: output }}
             />
           </div>
         ) : (
-          <div className="flex items-center justify-center py-12 text-center">
+          <div className="flex items-center justify-center py-12 text-center px-4">
             <p className="text-sm text-muted-foreground">
               Your cleaned notes will appear here.
               <br />

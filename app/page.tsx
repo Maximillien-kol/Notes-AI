@@ -24,7 +24,7 @@ export default function HomePage() {
   const [documents, setDocuments] = useState<Document[]>([])
   const [currentDocId, setCurrentDocId] = useState<string | null>(null)
   const [isLoadingDocs, setIsLoadingDocs] = useState(true)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
 
   const [showWelcome, setShowWelcome] = useState(false)
   const [showLimitReached, setShowLimitReached] = useState(false)
@@ -248,26 +248,27 @@ export default function HomePage() {
         onNewDoc={handleNewDoc}
         onDeleteDoc={handleDeleteDoc}
         isLoading={isLoadingDocs}
-        onCollapse={setSidebarCollapsed}
+        isMobileOpen={mobileSidebarOpen}
+        onToggleMobile={() => setMobileSidebarOpen(!mobileSidebarOpen)}
       />
 
-      <div className={`ml-64 flex flex-col min-h-screen transition-all duration-200 ${sidebarCollapsed ? "ml-0" : ""}`}>
-        <Header />
+      <div className="flex flex-col min-h-screen transition-all duration-200 md:ml-64">
+        <Header onToggleMobileSidebar={() => setMobileSidebarOpen(!mobileSidebarOpen)} />
 
         <main className="flex-1 overflow-auto">
-          <div className="container mx-auto px-4 py-8">
+          <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
             {/* Hero Section */}
-            <div className="text-center mb-10">
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-foreground mb-3 text-balance">
+            <div className="text-center mb-6 sm:mb-10">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-foreground mb-2 sm:mb-3 text-balance px-2">
                 Transform messy notes into clarity
               </h1>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto text-pretty">
+              <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto text-pretty px-4">
                 Paste your notes, select an action, and let AI clean, organize, and summarize them instantly.
               </p>
             </div>
 
             {/* Main Content */}
-            <div className="grid gap-6 lg:grid-cols-2 max-w-6xl mx-auto">
+            <div className="flex flex-col lg:grid lg:grid-cols-2 gap-4 sm:gap-6 max-w-6xl mx-auto">
               {/* Input Section */}
               <div className="space-y-4">
                 <NotesInput
@@ -293,7 +294,7 @@ export default function HomePage() {
             </div>
 
             {/* Features Section */}
-            <div className="mt-16 grid gap-6 md:grid-cols-3 max-w-4xl mx-auto">
+            <div className="mt-8 sm:mt-12 md:mt-16 grid gap-4 sm:gap-6 md:grid-cols-3 max-w-4xl mx-auto">
               {[
                 {
                   title: "Clean Notes",
@@ -308,8 +309,8 @@ export default function HomePage() {
                   description: "Get cleaned notes, key points, definitions, and summary.",
                 },
               ].map((feature) => (
-                <div key={feature.title} className="p-6 rounded-lg border border-border bg-card">
-                  <h3 className="font-semibold text-foreground mb-2">{feature.title}</h3>
+                <div key={feature.title} className="p-4 sm:p-6 rounded-lg border border-border bg-card">
+                  <h3 className="font-semibold text-foreground mb-1 sm:mb-2">{feature.title}</h3>
                   <p className="text-sm text-muted-foreground">{feature.description}</p>
                 </div>
               ))}

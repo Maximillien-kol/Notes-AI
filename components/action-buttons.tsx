@@ -38,20 +38,20 @@ export function ActionButtons({ onAction, onSave, isLoading, isSaving, disabled 
 
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
         {actions.map(({ type, label, icon, description }) => (
           <Button
             key={type}
             onClick={() => onAction(type)}
             disabled={disabled || isLoading}
             variant={type === "fullOutput" ? "default" : "secondary"}
-            className="h-auto py-3 px-4 flex flex-col gap-1 items-center justify-center"
+            className="h-auto py-3 sm:py-3 px-3 sm:px-4 flex flex-col gap-1 items-center justify-center touch-manipulation"
           >
             <span className="flex items-center gap-2">
               {icon}
-              <span className="font-medium">{label}</span>
+              <span className="font-medium text-sm sm:text-base">{label}</span>
             </span>
-            <span className="text-xs text-muted-foreground">{description}</span>
+            <span className="text-xs text-muted-foreground hidden sm:block">{description}</span>
           </Button>
         ))}
       </div>
@@ -59,7 +59,7 @@ export function ActionButtons({ onAction, onSave, isLoading, isSaving, disabled 
         onClick={onSave}
         disabled={disabled || isSaving}
         variant="outline"
-        className="w-full gap-2 bg-transparent"
+        className="w-full gap-2 bg-transparent h-10 sm:h-9 touch-manipulation"
       >
         <Save className="h-4 w-4" />
         {isSaving ? "Saving..." : "Save Document"}

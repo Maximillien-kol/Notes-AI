@@ -115,10 +115,11 @@ export function NotesInput({ value, onChange, title, onTitleChange, disabled }: 
               size="sm"
               onClick={() => fileInputRef.current?.click()}
               disabled={disabled || isProcessing}
-              className="h-7 gap-1.5 text-xs"
+              className="h-8 sm:h-7 gap-1.5 text-xs px-2 sm:px-3"
             >
-              <Upload className="h-3 w-3" />
-              {isProcessing ? 'Processing...' : 'Upload PDF/DOCX'}
+              <Upload className="h-3.5 w-3.5 sm:h-3 sm:w-3" />
+              <span className="hidden sm:inline">{isProcessing ? 'Processing...' : 'Upload PDF/DOCX'}</span>
+              <span className="sm:hidden">{isProcessing ? 'Processing...' : 'Upload'}</span>
             </Button>
           </div>
         </div>
@@ -136,7 +137,7 @@ Example:
           value={value}
           onChange={(e) => onChange(e.target.value)}
           disabled={disabled || isProcessing}
-          className="min-h-[250px] max-h-[200px] overflow-auto resize-none bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary font-mono text-sm leading-relaxed"
+          className="min-h-[200px] sm:min-h-[250px] lg:min-h-[300px] resize-y bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary font-mono text-sm leading-relaxed"
         />
         <p className="text-xs text-muted-foreground">{value.length.toLocaleString()} characters</p>
       </div>

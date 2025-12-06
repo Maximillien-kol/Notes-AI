@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { FileText, Plus, Trash2, ChevronLeft, ChevronRight, User } from "lucide-react"
+import { FileText, Plus, Trash2, X, User } from "lucide-react"
 import type { Document } from "@/lib/documents"
 import { cn } from "@/lib/utils"
 
@@ -14,6 +14,8 @@ interface DocumentsSidebarProps {
   onNewDoc: () => void
   onDeleteDoc: (id: string) => void
   isLoading: boolean
+  isMobileOpen?: boolean
+  onToggleMobile?: () => void
 }
 
 export function DocumentsSidebar({
@@ -23,8 +25,9 @@ export function DocumentsSidebar({
   onNewDoc,
   onDeleteDoc,
   isLoading,
+  isMobileOpen = false,
+  onToggleMobile,
 }: DocumentsSidebarProps) {
-  const [isCollapsed, setIsCollapsed] = useState(false)
   const [userEmail, setUserEmail] = useState<string | null>(null)
 
   useEffect(() => {
@@ -42,27 +45,48 @@ export function DocumentsSidebar({
   }
 
   return (
-    <div
-      className={cn(
-        "fixed left-0 top-0 h-screen border-r border-border bg-card/95 backdrop-blur-sm flex flex-col transition-all duration-200 z-20",
-        isCollapsed ? "w-12" : "w-64",
+    <>
+      {/* Overlay - only on mobile */}
+      {isMobileOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={onToggleMobile}
+        />
       )}
-    >
+
+      <div
+        className={cn(
+          "fixed top-0 h-screen bg-card/95 backdrop-blur-sm flex flex-col transition-all duration-200 w-64",
+          // Desktop: always visible on left
+          "md:left-0 md:border-r md:translate-x-0 md:z-20",
+          // Mobile: slide from right, hidden by default
+          "right-0 border-l z-50",
+          isMobileOpen ? "translate-x-0" : "translate-x-full md:translate-x-0"
+        )}
+      >
       <div className="p-3 border-b border-border flex items-center justify-between">
-        {!isCollapsed && <h2 className="font-semibold text-sm text-foreground">Documents</h2>}
-        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setIsCollapsed(!isCollapsed)}>
-          {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+        <h2 className="font-semibold text-sm text-foreground">Documents</h2>
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="h-7 w-7 md:hidden" 
+          onClick={onToggleMobile}
+          aria-label="Close sidebar"
+        >
+          <X className="h-4 w-4" />
         </Button>
       </div>
 
-      {!isCollapsed && (
-        <>
+      <>
           <div className="p-2">
             <Button
               variant="outline"
               size="sm"
               className="w-full justify-start gap-2 bg-transparent"
-              onClick={onNewDoc}
+              onClick={() => {
+                onNewDoc()
+                onToggleMobile?.()
+              }}
             >
               <Plus className="h-4 w-4" />
               New Document
@@ -85,7 +109,10 @@ export function DocumentsSidebar({
                         ? "bg-primary/10 text-primary"
                         : "hover:bg-muted text-muted-foreground hover:text-foreground",
                     )}
-                    onClick={() => onSelectDoc(doc)}
+                    onClick={() => {
+                      onSelectDoc(doc)
+                      onToggleMobile?.()
+                    }}
                   >
                     <FileText className="h-4 w-4 shrink-0" />
                     <span className="truncate flex-1">{doc.title}</span>
@@ -122,22 +149,7 @@ export function DocumentsSidebar({
             </div>
           </div>
         </>
-      )}
-
-      {isCollapsed && (
-        <div className="flex flex-col h-full">
-          <div className="p-2">
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onNewDoc}>
-              <Plus className="h-4 w-4" />
-            </Button>
-          </div>
-          <div className="mt-auto p-2 border-t border-border">
-            <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-              <User className="h-4 w-4 text-primary" />
-            </div>
-          </div>
-        </div>
-      )}
     </div>
+    </>
   )
 }
