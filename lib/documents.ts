@@ -7,13 +7,30 @@ export interface Document {
   output?: string
   createdAt: number
   updatedAt: number
+  sessionId?: string
+}
+
+// Get or create a unique session ID for this browser
+function getSessionId(): string {
+  if (typeof window === 'undefined') return ''
+  
+  let sessionId = localStorage.getItem('notes-ai-session-id')
+  if (!sessionId) {
+    // Generate a unique session ID
+    sessionId = `session_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`
+    localStorage.setItem('notes-ai-session-id', sessionId)
+  }
+  return sessionId
 }
 
 export async function getAllDocuments(): Promise<Document[]> {
   try {
+    const sessionId = getSessionId()
+    
     const { data, error } = await supabase
       .from('documents')
       .select('*')
+      .eq('session_id', sessionId)
       .order('updated_at', { ascending: false })
 
     if (error) throw error
@@ -35,10 +52,13 @@ export async function getAllDocuments(): Promise<Document[]> {
 
 export async function getDocument(id: string): Promise<Document | null> {
   try {
+    const sessionId = getSessionId()
+    
     const { data, error } = await supabase
       .from('documents')
       .select('*')
       .eq('id', id)
+      .eq('session_id', sessionId)
       .single()
 
     if (error) throw error
@@ -63,9 +83,10 @@ export async function saveDocument(
 ): Promise<Document> {
   try {
     const now = new Date().toISOString()
+    const sessionId = getSessionId()
 
     if (doc.id) {
-      // Update existing document
+      // Update existing document - verify ownership
       const { data, error } = await supabase
         .from('documents')
         .update({
@@ -75,6 +96,7 @@ export async function saveDocument(
           updated_at: now,
         })
         .eq('id', doc.id)
+        .eq('session_id', sessionId)
         .select()
         .single()
 
@@ -96,6 +118,7 @@ export async function saveDocument(
           title: doc.title,
           content: doc.content,
           output: doc.output,
+          session_id: sessionId,
           user_id: null, // For now, no authentication
         })
         .select()
@@ -120,10 +143,13 @@ export async function saveDocument(
 
 export async function deleteDocument(id: string): Promise<boolean> {
   try {
+    const sessionId = getSessionId()
+    
     const { error } = await supabase
       .from('documents')
       .delete()
       .eq('id', id)
+      .eq('session_id', sessionId)
 
     if (error) throw error
     return true

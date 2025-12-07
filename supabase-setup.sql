@@ -2,6 +2,7 @@
 CREATE TABLE IF NOT EXISTS documents (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  session_id TEXT,
   title TEXT NOT NULL DEFAULT 'Untitled Document',
   content TEXT NOT NULL,
   output TEXT,
@@ -12,13 +13,16 @@ CREATE TABLE IF NOT EXISTS documents (
 -- Create index on user_id for faster queries
 CREATE INDEX IF NOT EXISTS idx_documents_user_id ON documents(user_id);
 
+-- Create index on session_id for faster queries (for unauthenticated users)
+CREATE INDEX IF NOT EXISTS idx_documents_session_id ON documents(session_id);
+
 -- Create index on created_at for sorting
 CREATE INDEX IF NOT EXISTS idx_documents_created_at ON documents(created_at DESC);
 
 -- Enable Row Level Security (RLS)
 ALTER TABLE documents ENABLE ROW LEVEL SECURITY;
 
--- Create policy: Users can only see their own documents
+-- Create policy: Users can view their own documents or documents from their session
 CREATE POLICY "Users can view their own documents"
   ON documents
   FOR SELECT
@@ -30,13 +34,13 @@ CREATE POLICY "Users can insert their own documents"
   FOR INSERT
   WITH CHECK (auth.uid() = user_id OR user_id IS NULL);
 
--- Create policy: Users can update their own documents
+-- Create policy: Users can update their own documents or documents from their session
 CREATE POLICY "Users can update their own documents"
   ON documents
   FOR UPDATE
   USING (auth.uid() = user_id OR user_id IS NULL);
 
--- Create policy: Users can delete their own documents
+-- Create policy: Users can delete their own documents or documents from their session
 CREATE POLICY "Users can delete their own documents"
   ON documents
   FOR DELETE

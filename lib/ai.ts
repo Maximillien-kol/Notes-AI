@@ -1,14 +1,55 @@
 import { google } from "@ai-sdk/google"
+import { createGoogleGenerativeAI } from "@ai-sdk/google"
 
-// Default model configuration - easily swappable
+// Create separate Gemini instances for each API key
+const gemini1 = process.env.GOOGLE_GENERATIVE_AI_API_KEY_1
+  ? createGoogleGenerativeAI({
+    apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY_1,
+  })
+  : null
+
+const gemini2 = process.env.GOOGLE_GENERATIVE_AI_API_KEY_2
+  ? createGoogleGenerativeAI({
+    apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY_2,
+  })
+  : null
+
+// AI Provider configurations with multiple Gemini API keys for fallback
+// When one key hits rate limit, it automatically tries the next one
+export const AI_PROVIDERS = [
+  {
+    name: "Google Gemini (Primary)",
+    model: gemini1 ? gemini1("gemini-2.0-flash-exp") : null,
+    enabled: Boolean(process.env.GOOGLE_GENERATIVE_AI_API_KEY_1),
+    isGemini: true,
+  },
+  {
+    name: "Google Gemini (Backup)",
+    model: gemini2 ? gemini2("gemini-2.0-flash-exp") : null,
+    enabled: Boolean(process.env.GOOGLE_GENERATIVE_AI_API_KEY_2),
+    isGemini: true,
+  },
+] as const
+
+// Get available providers (only those with API keys configured)
+export function getAvailableProviders() {
+  return AI_PROVIDERS.filter((provider) => provider.enabled && provider.model !== null)
+}
+
+// Check if an error is a rate limit error from Gemini
+export function isRateLimitError(error: Error): boolean {
+  const errorMessage = error.message.toLowerCase()
+  return (
+    errorMessage.includes("rate limit") ||
+    errorMessage.includes("quota exceeded") ||
+    errorMessage.includes("429") ||
+    errorMessage.includes("resource exhausted") ||
+    errorMessage.includes("too many requests")
+  )
+}
+
+// Default model configuration
 export const AI_CONFIG = {
-  // Using Google Gemini
-  defaultModel: google("gemini-2.5-flash"),
-
-  // Alternative models (uncomment to use)
-  // defaultModel: 'anthropic/claude-3-haiku-20240307',
-  // defaultModel: 'groq/llama-3.1-70b-versatile',
-
   maxOutputTokens: 4000,
   temperature: 0.7,
 } as const
