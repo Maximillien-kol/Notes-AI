@@ -14,8 +14,8 @@ async function testGemini() {
     console.log('✅ API Key found');
 
     try {
-        const model = google('gemini-2.5-flash');
-        console.log('Using model: gemini-2.5-flash');
+        const model = google('gemini-2.5-flash-live');
+        console.log('Using model: gemini-2.5-flash-live');
         console.log('Sending test request...');
 
         const startTime = Date.now();

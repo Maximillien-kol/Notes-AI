@@ -19,13 +19,13 @@ const gemini2 = process.env.GOOGLE_GENERATIVE_AI_API_KEY_2
 export const AI_PROVIDERS = [
   {
     name: "Google Gemini (Primary)",
-    model: gemini1 ? gemini1("gemini-2.0-flash-exp") : null,
+    model: gemini1 ? gemini1("gemini-2.5-flash-live") : null,
     enabled: Boolean(process.env.GOOGLE_GENERATIVE_AI_API_KEY_1),
     isGemini: true,
   },
   {
     name: "Google Gemini (Backup)",
-    model: gemini2 ? gemini2("gemini-2.0-flash-exp") : null,
+    model: gemini2 ? gemini2("gemini-2.5-flash-live") : null,
     enabled: Boolean(process.env.GOOGLE_GENERATIVE_AI_API_KEY_2),
     isGemini: true,
   },
